@@ -890,8 +890,9 @@ BOOL nego_send_negotiation_response(rdpNego* nego)
 	BOOL status;
 	wStream* s;
 	BYTE flags;
+	rdpSettings* settings;
 	status = TRUE;
-
+	settings = nego->transport->settings;
 	s = Stream_New(NULL, 512);
 	if (!s)
 		return FALSE;
