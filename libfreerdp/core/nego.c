@@ -62,7 +62,9 @@ static const char PROTOCOL_SECURITY_STRINGS[9][4] =
 };
 #endif /* WITH_DEBUG_NEGO */
 
-BOOL nego_security_connect(rdpNego* nego);
+static int nego_transport_connect(rdpNego* nego);
+static int nego_transport_disconnect(rdpNego* nego);
+static BOOL nego_security_connect(rdpNego* nego);
 
 /**
  * Negotiate protocol security and connect.
@@ -181,7 +183,12 @@ BOOL nego_connect(rdpNego* nego)
 
 	return TRUE;
 }
-
+BOOL nego_disconnect(rdpNego* nego)
+{
+	rdpSettings* settings = nego->transport->settings;
+	nego->state = NEGO_STATE_INITIAL;
+	return nego_transport_disconnect(nego);
+	}
 /* connect to selected security layer */
 BOOL nego_security_connect(rdpNego* nego)
 {
