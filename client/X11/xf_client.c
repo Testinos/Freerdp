@@ -715,7 +715,7 @@ BOOL xf_get_pixmap_info(xfContext* xfc)
 		return FALSE;
 	}
 
-	vi = NULL;
+	vi = vis;
 
 	for (i = 0; i < vi_count; i++)
 	{
@@ -799,6 +799,7 @@ static void xf_post_disconnect(freerdp* instance)
 	}
 
 	xf_monitors_free(xfc, instance->settings);
+	gdi_free(instance);
 }
 
 static void xf_play_sound(rdpContext* context, PLAY_SOUND_UPDATE* play_sound)
@@ -1649,7 +1650,6 @@ void* xf_thread(void *param)
 
 	freerdp_channels_free(channels);
 	freerdp_disconnect(instance);
-	gdi_free(instance);
 
 	ExitThread(exit_code);
 	return NULL;
@@ -1755,6 +1755,7 @@ static int xfreerdp_client_start(rdpContext* context)
 		WLog_ERR(TAG,  "error: server hostname was not specified with /v:<server>[:port]");
 		return -1;
 	}
+	xfc->disconnect = FALSE;
 	xfc->thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) xf_thread,
 							   context->instance, 0, NULL);
 	return 0;
