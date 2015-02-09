@@ -485,6 +485,7 @@ void xf_register_graphics(rdpGraphics* graphics)
 	pointer->SetDefault = xf_Pointer_SetDefault;
 	pointer->SetPosition = xf_Pointer_SetPosition;
 
+
 	graphics_register_pointer(graphics, pointer);
 	free(pointer);
 
