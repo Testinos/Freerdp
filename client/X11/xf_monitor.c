@@ -50,7 +50,11 @@ int xf_list_monitors(xfContext* xfc)
 	XineramaScreenInfo* screen = NULL;
 
 	display = XOpenDisplay(NULL);
-
+	if (!display)
+	 {
+	 WLog_ERR(TAG, "failed to open X display");
+	 return -1;
+	 }
 	if (XineramaQueryExtension(display, &ignored, &ignored2))
 	{
 		if (XineramaIsActive(display))
@@ -75,6 +79,12 @@ int xf_list_monitors(xfContext* xfc)
 	Display* display;
 
 	display = XOpenDisplay(NULL);
+	
+	if(!display)
+	 {
+		WLog_ERR(TAG, "failed to open X display");
+	 return -1;
+	 }
 
 	screen = ScreenOfDisplay(display, DefaultScreen(display));
 	WLog_DBG(TAG, "      * [0] %dx%d\t+%d+%d", WidthOfScreen(screen), HeightOfScreen(screen), 0, 0);
