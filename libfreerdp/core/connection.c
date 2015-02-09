@@ -289,7 +289,7 @@ BOOL rdp_client_connect(rdpRdp* rdp)
 	{
 		if (!connectErrorCode)
 		{
-			connectErrorCode = MCSCONNECTINITIALERROR;                      
+		connectErrorCode = MCSCONNECTINITIALERROR;
 		}
 
 		if (!freerdp_get_last_error(rdp->context))
@@ -319,7 +319,18 @@ BOOL rdp_client_connect(rdpRdp* rdp)
 
 BOOL rdp_client_disconnect(rdpRdp* rdp)
 {
-	return transport_disconnect(rdp->transport);
+BOOL rc;
+
+ if (rdp->settingsCopy)
+ {
+ freerdp_settings_free(rdp->settingsCopy);
+ rdp->settingsCopy = NULL;
+ }
+
+ rc = nego_disconnect(rdp->nego);
+ rdp_reset(rdp);
+ rdp_client_transition_to_state(rdp, CONNECTION_STATE_INITIAL);
+ return rc;
 }
 
 BOOL rdp_client_redirect(rdpRdp* rdp)
@@ -328,8 +339,6 @@ BOOL rdp_client_redirect(rdpRdp* rdp)
 	rdpSettings* settings = rdp->settings;
 
 	rdp_client_disconnect(rdp);
-
-	rdp_reset(rdp);
 
 	rdp_redirection_apply_settings(rdp);
 
@@ -371,15 +380,6 @@ BOOL rdp_client_redirect(rdpRdp* rdp)
 	status = rdp_client_connect(rdp);
 
 	return status;
-}
-
-BOOL rdp_client_reconnect(rdpRdp* rdp)
-{
-	rdp_client_disconnect(rdp);
-
-	rdp_reset(rdp);
-
-	return rdp_client_connect(rdp);
 }
 
 static BYTE fips_ivec[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
@@ -758,7 +758,7 @@ BOOL rdp_client_connect_mcs_channel_join_confirm(rdpRdp* rdp, wStream* s)
 	return TRUE;
 }
 
-BOOL rdp_client_connect_auto_detect(rdpRdp* rdp, wStream *s)
+BOOL rdp_client_connect_auto_detect(rdpRdp* rdp, wStream* s)
 {
 	BYTE* mark;
 	UINT16 length;
