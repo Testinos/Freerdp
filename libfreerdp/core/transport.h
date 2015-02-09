@@ -55,14 +55,13 @@ typedef int (*TransportRecv) (rdpTransport* transport, wStream* stream, void* ex
 struct rdp_transport
 {
 	TRANSPORT_LAYER layer;
-	BIO* frontBio;
+	BIO *frontBio;
 	rdpTsg* tsg;
 	rdpTcp* TcpIn;
 	rdpTcp* TcpOut;
 	rdpTls* TlsIn;
 	rdpTls* TlsOut;
 	rdpTls* TsgTls;
-	rdpContext* context;
 	rdpCredssp* credssp;
 	rdpSettings* settings;
 	UINT32 SleepInterval;
@@ -82,6 +81,7 @@ struct rdp_transport
 	BOOL GatewayEnabled;
 	CRITICAL_SECTION ReadLock;
 	CRITICAL_SECTION WriteLock;
+	wLog* log;
 	void* rdp;
 };
 
@@ -98,12 +98,9 @@ BOOL transport_accept_nla(rdpTransport* transport);
 void transport_stop(rdpTransport* transport);
 int transport_read_pdu(rdpTransport* transport, wStream* s);
 int transport_write(rdpTransport* transport, wStream* s);
-
 void transport_get_fds(rdpTransport* transport, void** rfds, int* rcount);
 int transport_check_fds(rdpTransport* transport);
-
 DWORD transport_get_event_handles(rdpTransport* transport, HANDLE* events);
-
 BOOL transport_set_blocking_mode(rdpTransport* transport, BOOL blocking);
 void transport_set_gateway_enabled(rdpTransport* transport, BOOL GatewayEnabled);
 void transport_set_nla_mode(rdpTransport* transport, BOOL NlaMode);
@@ -113,7 +110,7 @@ int tranport_drain_output_buffer(rdpTransport* transport);
 wStream* transport_receive_pool_take(rdpTransport* transport);
 int transport_receive_pool_return(rdpTransport* transport, wStream* pdu);
 
-rdpTransport* transport_new(rdpContext* context);
+rdpTransport* transport_new(rdpSettings* settings);
 void transport_free(rdpTransport* transport);
 
 #endif
