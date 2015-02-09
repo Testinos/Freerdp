@@ -993,6 +993,7 @@ static int rdpgfx_plugin_terminated(IWTSPlugin* pPlugin)
 			gfx->CacheSlots[index] = NULL;
 		}
 	}
+	free(context);
 
 	free(gfx);
 
@@ -1105,7 +1106,7 @@ int DVCPluginEntry(IDRDYNVC_ENTRY_POINTS* pEntryPoints)
 
 		if (!context)
 		{
-			free (gfx);
+			free(gfx);
 			return -1;
 		}
 
