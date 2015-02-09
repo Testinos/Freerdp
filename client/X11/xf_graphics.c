@@ -320,31 +320,34 @@ void xf_Pointer_SetDefault(rdpContext* context)
 }
 
 void xf_Pointer_SetPosition(rdpContext* context, UINT32 x, UINT32 y)
-	{
-	 xfContext* xfc = (xfContext*) context;
+{
+	xfContext* xfc = (xfContext*) context;
 	XWindowAttributes current;
 	XSetWindowAttributes tmp;
-	
-	if (!xfc->focused || !xfc->window) 
-	return;
 
-	 xf_lock_x11(xfc, FALSE);
+	if (!xfc->focused || !xfc->window)
+		return;
+
+	xf_lock_x11(xfc, FALSE);
 
 	if (XGetWindowAttributes(xfc->display, xfc->window->handle, &current) == 0)
-	 goto out;
-	 tmp.event_mask = (current.your_event_mask & ~(PointerMotionMask));
-	 if (XChangeWindowAttributes(xfc->display, xfc->window->handle, CWEventMask, &tmp) == 0)
-	 goto out;
+		goto out;
 
-	 XWarpPointer(xfc->display, None, xfc->window->handle, 0, 0, 0, 0, x, y);
+	tmp.event_mask = (current.your_event_mask & ~(PointerMotionMask));
+	if (XChangeWindowAttributes(xfc->display, xfc->window->handle, CWEventMask, &tmp) == 0)
+		goto out;
 
-	 tmp.event_mask = current.your_event_mask;
-	 XChangeWindowAttributes(xfc->display, xfc->window->handle, CWEventMask, &tmp);
+	XWarpPointer(xfc->display, None, xfc->window->handle, 0, 0, 0, 0, x, y);
 
-	out:
-		 xf_unlock_x11(xfc, FALSE);
-		 return;
-}	
+	tmp.event_mask = current.your_event_mask;
+	XChangeWindowAttributes(xfc->display, xfc->window->handle, CWEventMask, &tmp);
+
+out:
+		xf_unlock_x11(xfc, FALSE);
+		return;
+
+}
+
 /* Glyph Class */
 
 void xf_Glyph_New(rdpContext* context, rdpGlyph* glyph)
