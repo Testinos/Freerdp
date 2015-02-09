@@ -186,6 +186,7 @@ WINPR_API BOOL WaitOnAddress(VOID volatile *Address, PVOID CompareAddress, SIZE_
 #endif
 
 #define WAIT_FAILED		((DWORD) 0xFFFFFFFF)
+#define MAXIMUM_WAIT_OBJECTS	64
 
 WINPR_API DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
 WINPR_API DWORD WaitForSingleObjectEx(HANDLE hHandle, DWORD dwMilliseconds, BOOL bAlertable);
