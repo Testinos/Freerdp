@@ -350,8 +350,8 @@ int xf_SurfaceCommand_H264(xfContext* xfc, RdpgfxClientContext* context, RDPGFX_
 	DstData = surface->data;
 
 	status = h264_decompress(xfc->codecs->h264, bs->data, bs->length, &DstData,
-			surface->format, surface->scanline , surface->height, meta->regionRects, meta->numRegionRects);
-
+			surface->format, surface->scanline , surface->width,
+			surface->height, meta->regionRects, meta->numRegionRects);
 	if (status < 0)
 	{
 		WLog_ERR(TAG, "h264_decompress failure: %d",status);
