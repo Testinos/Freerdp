@@ -662,8 +662,8 @@ static void rdpdr_send_device_list_announce_request(rdpdrPlugin* rdpdr, BOOL use
 				Stream_Write(s, Stream_Buffer(device->data), data_len);
 
 			count++;
-			WLog_INFO(TAG,  "registered device #%d: %s (type=%d id=%d)\n",
-					  count, device->name, device->type, device->id);
+				WLog_INFO(TAG,  "registered device #%d: %s (type=%d id=%d)",	  
+				count, device->name, device->type, device->id);
 		}
 	}
 
