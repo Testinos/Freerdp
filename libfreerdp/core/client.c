@@ -98,7 +98,21 @@ rdpChannels* freerdp_channels_new(void)
 
 void freerdp_channels_free(rdpChannels* channels)
 {
+	int index;
+	CHANNEL_OPEN_DATA* pChannelOpenData;
+
 	MessagePipe_Free(channels->MsgPipe);
+
+	for (index = 0; index < channels->clientDataCount; index++)
+	{
+		pChannelOpenData = &channels->openDataList[index];
+
+		if (pChannelOpenData->pInterface)
+		{
+			free(pChannelOpenData->pInterface);
+			pChannelOpenData->pInterface = NULL;
+		}
+	}
 
 	free(channels);
 }
@@ -264,7 +278,6 @@ static int freerdp_channels_process_sync(rdpChannels* channels, freerdp* instanc
 {
 	int status = TRUE;
 	wMessage message;
-	wMessage* event;
 	rdpMcsChannel* channel;
 	CHANNEL_OPEN_EVENT* item;
 	CHANNEL_OPEN_DATA* pChannelOpenData;
@@ -301,7 +314,6 @@ static int freerdp_channels_process_sync(rdpChannels* channels, freerdp* instanc
 		}
 		else if (message.id == 1)
 		{
-			event = (wMessage*) message.wParam;
 
 			/**
 			 * Ignore for now, the same event is being pushed on the In queue,
@@ -381,22 +393,6 @@ BOOL freerdp_channels_check_fds(rdpChannels* channels, freerdp* instance)
 	}
 
 	return TRUE;
-}
-
-wMessage* freerdp_channels_pop_event(rdpChannels* channels)
-{
-	wMessage message;
-	wMessage* event = NULL;
-
-	if (MessageQueue_Peek(channels->MsgPipe->In, &message, TRUE))
-	{
-		if (message.id == 1)
-		{
-			event = (wMessage*) message.wParam;
-		}
-	}
-
-	return event;
 }
 
 void freerdp_channels_close(rdpChannels* channels, freerdp* instance)
